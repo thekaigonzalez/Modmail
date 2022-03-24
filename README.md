@@ -1,5 +1,6 @@
-
-[UDIM Logo](img/UDiMLogo.png)
+<div style="text-align: center">
+![UDIM Logo](img/UDIMLogo.png)
+</div>
 
 # U.D.I.M
 
