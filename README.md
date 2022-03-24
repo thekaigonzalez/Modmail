@@ -19,3 +19,16 @@ Then, you would have members DM the bot, which creates a `<USERID>-token` channe
 This is a listen channel, Type any message in it to have it forwarded to the person the channel's for!
 
 To close it, it gives you a command similar to: `-close <USERID>`, That's how you close channels, and reset the value of that user.
+
+## How do I exclude users
+
+There is currently no way to exclude users, but there is a way to automatically *exclude* them after one use.
+
+Create `udim.toml` and write:
+
+```toml
+[admin_settings]
+excludeAfterUse = true # Exclude so that user can only use modmail once
+```
+
+Then run the bot, and after one attempt, they should no longer be able to use UDIM.
