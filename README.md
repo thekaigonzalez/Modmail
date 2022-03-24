@@ -1,3 +1,7 @@
+<div style="text-align: center">
+[UDIM Logo](img/UDiMLogo.png)
+</div>
+
 # U.D.I.M
 
 Ultimate Discord Instant Messenger.
