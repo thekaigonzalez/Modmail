@@ -1,3 +1,4 @@
 [admin_settings]
 excludeAfterUse = true # Exclude so that user can only use modmail once
 niceMessages = true
+rememberServer = true

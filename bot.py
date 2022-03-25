@@ -7,15 +7,28 @@ from discord.ext import commands
 
 EXCLUDE_AFTER_USE = False
 SAVE_VALUES_ON_EXIT = False
+REMEMBER_SERVER = False
 USE_SPECIAL_EMBED_BETA = False
 if pathlib.Path("udim.toml").exists():
     t = toml.load('udim.toml')
     EXCLUDE_AFTER_USE = t['admin_settings']["excludeAfterUse"]
     USE_SPECIAL_EMBED_BETA = t['admin_settings']["niceMessages"]
+    REMEMBER_SERVER = t['admin_settings']["rememberServer"]
+
 class Bot(commands.Bot):
     async def async_cleanup(self):  # example cleanup function
         print("Exiting...")
-            
+        if REMEMBER_SERVER:
+            print("Remembering server...")
+            try:
+                f = open("SERVER.txt", "w")
+                f.write(str(tokchan.id))
+                f.close()
+            except:
+                print("Could not save server.txt due to error.")
+                os.remove("SERVER.txt")
+
+
     async def close(self):
         # do your cleanup here
         await self.async_cleanup()
@@ -29,6 +42,13 @@ async def on_ready():
     users = {}
     extras = {}
     exclude = []
+    if pathlib.Path("SERVER.txt").exists():
+            f = open("SERVER.txt", "r")
+            tokchan = client.get_guild(int(f.read().strip()))
+            print(tokchan)
+            f.close()
+
+    
 
 def find_user_from_users(id):
     for m in users:
@@ -52,6 +72,9 @@ async def on_message(msg: discord.Message):
     global users
     global send1er
     global tokchan
+    
+    if msg.author == client.user: return
+
     try:
             users
     except Exception:
@@ -64,10 +87,26 @@ async def on_message(msg: discord.Message):
     try:
             exclude
     except Exception:
-            print("reset")
             exclude = []
+
+    try:
+        tokchan
+    except Exception:
+
+            if pathlib.Path("SERVER.txt").exists():
+                print("FOUND THIS SERVER TEXT OLLOADING")
+                f = open("SERVER.txt", "r")
+                tokchan = client.get_guild(int(f.read().strip()))
+                f.close()
+
+            elif msg.guild:
+                await msg.channel.send("No token channel setup: I automatically am using this server.")
+                tokchan = msg.guild
+            else:
+                await msg.channel.send("The bot that this is setup for does not have the server mounted.")
+
    
-    if msg.author == client.user: return
+    
     if msg.content.startswith("-"):
         content = msg.content[msg.content.find("-")+1:]
         args = []
@@ -96,13 +135,13 @@ async def on_message(msg: discord.Message):
         if args[0] == 'close':
             exclude.append(args[1])
             if get_token_channel_id(args[1]) != None:
-                extras[args[1]].send("This conversation is closed.")
+                await extras[args[1]].send("This conversation was closed by the other peer.")
+                
                 await msg.channel.delete()
                 del extras[args[1]]
                 del users[msg.channel.id]
                 
-
-
+    
     f,i = find_user_from_users(str(msg.author.id))
     if not msg.guild and get_token_channel_id(str(msg.author.id)):
         if USE_SPECIAL_EMBED_BETA:
@@ -129,7 +168,8 @@ async def on_message(msg: discord.Message):
         users[idx] = msg.author
         extras[str(msg.author.id)] = msg.channel
 
-        await msg.channel.send("You're on! **Say hi!**")
+        await msg.channel.send("U.D.I.M P2P Messaging Service")
+
         await ch.send("User: " + msg.author.display_name + "\nCommand to remove token: " + "`-close " + str(msg.author.id) + "`")
         if USE_SPECIAL_EMBED_BETA:
             embed=discord.Embed(title=msg.author.display_name, 
