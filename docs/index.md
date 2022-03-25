@@ -1,6 +1,6 @@
 # UDIM 1.0.1 Manual
 
-UDIM 1.0.1 manual for UDIM 1.0.1
+UDIM 1.0.1 to master manual for UDIM 1.0.1 to master
 
 ## Index
 
