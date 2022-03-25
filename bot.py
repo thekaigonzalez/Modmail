@@ -99,7 +99,7 @@ async def on_message(msg: discord.Message):
                 tokchan = client.get_guild(int(f.read().strip()))
                 f.close()
 
-            elif msg.guild:
+            elif msg.guild and msg.author.guild_permissions.manage_guild:
                 await msg.channel.send("No token channel setup: I automatically am using this server.")
                 tokchan = msg.guild
             else:
@@ -128,11 +128,11 @@ async def on_message(msg: discord.Message):
             if args[0] == 'open' and not msg.guild:
                 await msg.channel.send("You are now connected to a ticket channel. **Say hi!**")
                 user = msg.author
-        if args[0] == 'server' and msg.guild:
+        if args[0] == 'server' and msg.guild and msg.author.guild_permissions.manage_guild:
             await msg.channel.send("This is now the main server for recieving ModMail messages.")
             
             tokchan = msg.guild
-        if args[0] == 'close':
+        if args[0] == 'close' and msg.author.guild_permissions.manage_guild:
             exclude.append(args[1])
             if get_token_channel_id(args[1]) != None:
                 await extras[args[1]].send("This conversation was closed by the other peer.")
