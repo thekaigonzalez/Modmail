@@ -2,3 +2,4 @@
 excludeAfterUse = true # Exclude so that user can only use modmail once
 niceMessages = true
 rememberServer = true
+useCommands = true

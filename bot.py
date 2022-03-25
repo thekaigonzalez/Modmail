@@ -8,12 +8,13 @@ from discord.ext import commands
 EXCLUDE_AFTER_USE = False
 SAVE_VALUES_ON_EXIT = False
 REMEMBER_SERVER = False
-USE_SPECIAL_EMBED_BETA = False
+USE_COMMANDS = False
 if pathlib.Path("udim.toml").exists():
     t = toml.load('udim.toml')
-    EXCLUDE_AFTER_USE = t['admin_settings']["excludeAfterUse"]
-    USE_SPECIAL_EMBED_BETA = t['admin_settings']["niceMessages"]
-    REMEMBER_SERVER = t['admin_settings']["rememberServer"]
+    EXCLUDE_AFTER_USE = t['admin_settings'].get("excludeAfterUse")
+    USE_SPECIAL_EMBED_BETA = t['admin_settings'].get("niceMessages")
+    REMEMBER_SERVER = t['admin_settings'].get("rememberServer")
+    USE_COMMANDS = t['admin_settings'].get("useCommands")
 
 class Bot(commands.Bot):
     async def async_cleanup(self):  # example cleanup function
@@ -96,7 +97,7 @@ async def on_message(msg: discord.Message):
                 tokchan = client.get_guild(int(f.read().strip()))
                 f.close()
 
-            elif msg.guild and msg.author.guild_permissions.manage_guild:
+            elif msg.guild and msg.author.guild_permissions.manage_guild and not msg.content.startswith("-"):
                 await msg.channel.send("No token channel setup: I automatically am using this server.")
                 tokchan = msg.guild
             else:
@@ -121,6 +122,13 @@ async def on_message(msg: discord.Message):
         if len(b) != 0:
             if state == 0:
                 args.append(b)
+        try:
+            import importlib
+            if USE_COMMANDS:
+                mod = importlib.import_module("ext." + args[0])
+                await mod.Init(args[1:], msg)
+        except:
+            pass
         if not msg.guild:
             if args[0] == 'open' and not msg.guild:
                 await msg.channel.send("You are now connected to a ticket channel. **Say hi!**")
