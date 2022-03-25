@@ -150,7 +150,6 @@ async def on_message(msg: discord.Message):
                 
                 await msg.channel.delete()
                 del extras[args[1]]
-                del users[msg.channel.id]
                 
     
     f,i = find_user_from_users(str(msg.author.id))
@@ -179,8 +178,19 @@ async def on_message(msg: discord.Message):
         users[idx] = msg.author
         extras[str(msg.author.id)] = msg.channel
 
-        await msg.channel.send("U.D.I.M P2P Messaging Service")
+        await msg.channel.send("U.D.I.M P2P Messaging Service (C) Kai Gonzalez")
+        
+        import importlib
 
+        for i in os.listdir("plugins"):
+                if not i.endswith(".py"): continue
+                name = i[:i.find(".")]
+                plug = importlib.import_module('plugins.' + name)
+                try:
+                    await plug.OnPeerForwarded(msg.author, ch)
+                except Exception:
+                    print("LOG: Plugin has no onPeerForwarded(): move.")
+                
         await ch.send("User: " + msg.author.display_name + "\nCommand to remove token: " + "`-close " + str(msg.author.id) + "`")
         if USE_SPECIAL_EMBED_BETA:
             embed=discord.Embed(title=msg.author.display_name, 
