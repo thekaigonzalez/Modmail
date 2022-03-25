@@ -9,6 +9,7 @@ EXCLUDE_AFTER_USE = False
 SAVE_VALUES_ON_EXIT = False
 REMEMBER_SERVER = False
 USE_COMMANDS = False
+PREFIX = '-'
 if pathlib.Path("udim.toml").exists():
     t = toml.load('udim.toml')
     EXCLUDE_AFTER_USE = t['admin_settings'].get("excludeAfterUse")
@@ -16,6 +17,11 @@ if pathlib.Path("udim.toml").exists():
     REMEMBER_SERVER = t['admin_settings'].get("rememberServer")
     USE_COMMANDS = t['admin_settings'].get("useCommands")
 
+    pref = '-'
+    if t['bot'].get("prefix") != None:
+        pref = t['bot'].get("prefix")
+
+    PREFIX = pref
 class Bot(commands.Bot):
     async def async_cleanup(self):  # example cleanup function
         print("Exiting...")
@@ -34,7 +40,7 @@ class Bot(commands.Bot):
         
         await super().close()  # don't forget this!
 
-client = Bot(command_prefix="-")
+client = Bot(command_prefix=PREFIX)
 
 @client.event
 async def on_ready():
@@ -105,8 +111,8 @@ async def on_message(msg: discord.Message):
 
    
     
-    if msg.content.startswith("-"):
-        content = msg.content[msg.content.find("-")+1:]
+    if msg.content.startswith(PREFIX):
+        content = msg.content[msg.content.find(PREFIX)+1:]
         args = []
         b = ""
         state = 0
