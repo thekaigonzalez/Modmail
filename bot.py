@@ -19,13 +19,11 @@ class Bot(commands.Bot):
     async def async_cleanup(self):  # example cleanup function
         print("Exiting...")
         if REMEMBER_SERVER:
-            print("Remembering server...")
             try:
                 f = open("SERVER.txt", "w")
                 f.write(str(tokchan.id))
                 f.close()
             except:
-                print("Could not save server.txt due to error.")
                 os.remove("SERVER.txt")
 
 
@@ -42,10 +40,10 @@ async def on_ready():
     users = {}
     extras = {}
     exclude = []
+    print("bot initialized")
     if pathlib.Path("SERVER.txt").exists():
             f = open("SERVER.txt", "r")
             tokchan = client.get_guild(int(f.read().strip()))
-            print(tokchan)
             f.close()
 
     
@@ -94,7 +92,6 @@ async def on_message(msg: discord.Message):
     except Exception:
 
             if pathlib.Path("SERVER.txt").exists():
-                print("FOUND THIS SERVER TEXT OLLOADING")
                 f = open("SERVER.txt", "r")
                 tokchan = client.get_guild(int(f.read().strip()))
                 f.close()
