@@ -7,9 +7,11 @@ from discord.ext import commands
 
 EXCLUDE_AFTER_USE = False
 SAVE_VALUES_ON_EXIT = False
+USE_SPECIAL_EMBED_BETA = False
 if pathlib.Path("udim.toml").exists():
     t = toml.load('udim.toml')
     EXCLUDE_AFTER_USE = t['admin_settings']["excludeAfterUse"]
+    USE_SPECIAL_EMBED_BETA = t['admin_settings']["niceMessages"]
 class Bot(commands.Bot):
     async def async_cleanup(self):  # example cleanup function
         print("Exiting...")
@@ -94,7 +96,7 @@ async def on_message(msg: discord.Message):
         if args[0] == 'close':
             exclude.append(args[1])
             if get_token_channel_id(args[1]) != None:
-                
+                extras[args[1]].send("This conversation is closed.")
                 await msg.channel.delete()
                 del extras[args[1]]
                 del users[msg.channel.id]
@@ -103,11 +105,16 @@ async def on_message(msg: discord.Message):
 
     f,i = find_user_from_users(str(msg.author.id))
     if not msg.guild and get_token_channel_id(str(msg.author.id)):
-        await get_token_channel_id(str(msg.author.id)).send(msg.content)
+        if USE_SPECIAL_EMBED_BETA:
+            embed=discord.Embed(title=msg.author.display_name, 
+            description=msg.content, color=0xFF5733)
+            await get_token_channel_id(str(msg.author.id)).send(embed=embed)
+        else:
+            await get_token_channel_id(str(msg.author.id)).send("**" + msg.author.display_name + "**:" + msg.content)
     
     if not msg.guild and extras.get(str(msg.author.id)) == None:
         if str(msg.author.id) in exclude:
-            print("Excluded")
+           
             await msg.channel.send("You can not send another modmail. `EXCLUDE_AFTER_CLOSE` is enabled.")
             return
         await tokchan.create_text_channel(str(msg.author.id) + "-token")
@@ -115,7 +122,6 @@ async def on_message(msg: discord.Message):
 
         for i in tokchan.channels:
             if i.name == str(msg.author.id) + "-token":
-                print("FOUND")
                 ch = i
                 break
         idx = str(ch.id)
@@ -125,9 +131,19 @@ async def on_message(msg: discord.Message):
 
         await msg.channel.send("You're on! **Say hi!**")
         await ch.send("User: " + msg.author.display_name + "\nCommand to remove token: " + "`-close " + str(msg.author.id) + "`")
-    
+        if USE_SPECIAL_EMBED_BETA:
+            embed=discord.Embed(title=msg.author.display_name, 
+            description=msg.content, color=0xFF5733)
+            await get_token_channel_id(str(msg.author.id)).send(embed=embed)
+        else:
+            await get_token_channel_id(str(msg.author.id)).send("**" + msg.author.display_name + "**:" + msg.content)
     if users.get(str(msg.channel.id)) != None:
-        await extras[str(msg.author.id)].send(msg.content)
+        if USE_SPECIAL_EMBED_BETA:
+            embed=discord.Embed(title=msg.author.display_name, 
+            description=msg.content, color=0xFF5733)
+            await extras[str(msg.author.id)].send(embed=embed)
+        else:
+            await extras[str(msg.author.id)].send("**" + msg.author.display_name + "**: " + msg.content)
 
 token = open("token.txt", "r")
 client.run(token.read().strip())
