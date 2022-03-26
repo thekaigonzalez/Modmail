@@ -5,4 +5,4 @@ rememberServer = true
 useCommands = true
 
 [bot]
-prefix = "?"
+prefix = "-"
