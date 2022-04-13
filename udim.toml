@@ -1,8 +1,8 @@
 [admin_settings]
 excludeAfterUse = true # Exclude so that user can only use modmail once
-niceMessages = true
-rememberServer = true
-useCommands = true
+niceMessages = true # BETA Message system
+rememberServer = true # Remember the server so after restarts you don't have to keep putting `-server` (WIP)
+useCommands = true # UDIM seconds as a general purpose bot! you can request commands found in the ext/ directory.
 
 [bot]
 prefix = "?"
