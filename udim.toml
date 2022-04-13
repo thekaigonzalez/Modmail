@@ -5,4 +5,4 @@ rememberServer = true # Remember the server so after restarts you don't have to 
 useCommands = true # UDIM seconds as a general purpose bot! you can request commands found in the ext/ directory.
 
 [bot]
-prefix = "?"
+prefix = "-"
